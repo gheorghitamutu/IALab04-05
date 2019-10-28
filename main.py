@@ -1,8 +1,3 @@
-"""
-    Minimax Algorithm Game
-        https://drive.google.com/file/d/0Byr72F6j0SDqUnZKVXJLdGdJX2tHLXY4UjhQZC1oUjhXZ1V3/view
-"""
-
 from Game.game import Game
 
 if __name__ == "__main__":

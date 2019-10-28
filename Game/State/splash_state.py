@@ -1,5 +1,6 @@
 import time
 from Game.State.state import StateInterface
+from Game.State.main_menu import MainMenu
 
 
 class SplashState(StateInterface):
@@ -16,14 +17,12 @@ class SplashState(StateInterface):
 
     def update(self):
         if self.__current_count == self.__state_duration:
-            # TODO: add main menu state
-            # self.__data.machine.add_state(MainMenu(data))
-            print("Should add main menu? -> Force close the script for now")
+            self.__data.get_state_machine().add_state(MainMenu(self.__data), is_replacing=True)
         else:
             self.__current_count += 1
 
     def draw(self):
-        print("\rMinimax Game {}".format(self.__state_duration - self.__current_count))
+        print("Minimax Game {}".format(self.__state_duration - self.__current_count))
 
         time.sleep(1)
 
