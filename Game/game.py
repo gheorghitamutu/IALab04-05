@@ -1,21 +1,16 @@
-import time
-from Game import game_data
+from Game.game_data import GameData
+from Game.State.splash_state import SplashState
 
 
 class Game:
-    data = game_data.GameData
+    def __init__(self):
+        self.__data = GameData()
+        self.__data.get_state_machine().add_state(SplashState(self.__data), is_replacing=True)
+        self.__data.get_state_machine().process_state_changes()
 
-    @staticmethod
-    def run():
-
+    def run(self):
         while True:
-            print('GameData.run()')
-
-            '''
-                TODO: from current state on queue handle user input
-                TODO: from current state on queue update
-                TODO: from current state on queue process state changes
-                TODO: from current state on queue draw (console stuff)
-            '''
-
-            time.sleep(1)  # TODO: remove this after you implement the above TODOs
+            self.__data.get_state_machine().get_active_state().handle_input()
+            self.__data.get_state_machine().get_active_state().update()
+            self.__data.get_state_machine().process_state_changes()
+            self.__data.get_state_machine().get_active_state().draw()

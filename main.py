@@ -3,8 +3,8 @@
         https://drive.google.com/file/d/0Byr72F6j0SDqUnZKVXJLdGdJX2tHLXY4UjhQZC1oUjhXZ1V3/view
 """
 
-from Game import game
+from Game.game import Game
 
 if __name__ == "__main__":
-    game_instance = game.Game
+    game_instance = Game()
     game_instance.run()
