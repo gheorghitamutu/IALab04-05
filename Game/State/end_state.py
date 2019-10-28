@@ -1,5 +1,5 @@
 import time
-from Game.State.state import StateInterface
+from Game.State.state_interface import StateInterface
 
 
 class EndState(StateInterface):

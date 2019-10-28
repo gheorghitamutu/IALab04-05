@@ -1,7 +1,3 @@
-"""
-    https://uk.godaddy.com/engineering/2018/12/20/python-metaclasses/
-"""
-
 from abc import ABC, abstractmethod
 
 

@@ -1,5 +1,6 @@
-from Game.State.state import StateInterface
+from Game.State.state_interface import StateInterface
 from Game.State.end_state import EndState
+from Game.State.play_state import PlayState
 
 
 class MainMenu(StateInterface):
@@ -13,8 +14,7 @@ class MainMenu(StateInterface):
         choice_index = int(input())
 
         if choice_index is 1:
-            # TODO: description state?
-            print("State not implemented!")
+            self.__data.get_state_machine().add_state(PlayState(self.__data), is_replacing=False)
         elif choice_index is 2:
             self.__data.get_state_machine().add_state(EndState(self.__data), is_replacing=True)
         else:

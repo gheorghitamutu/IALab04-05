@@ -1,5 +1,5 @@
 import time
-from Game.State.state import StateInterface
+from Game.State.state_interface import StateInterface
 from Game.State.main_menu import MainMenu
 
 

@@ -8,3 +8,5 @@
     https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-3-tic-tac-toe-ai-finding-optimal-move/
     https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-4-alpha-beta-pruning/
     https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-5-zobrist-hashing/
+## Various concepts or ideas used
+    https://uk.godaddy.com/engineering/2018/12/20/python-metaclasses/
