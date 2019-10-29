@@ -10,3 +10,4 @@
     https://www.geeksforgeeks.org/minimax-algorithm-in-game-theory-set-5-zobrist-hashing/
 ## Various concepts or ideas used
     https://uk.godaddy.com/engineering/2018/12/20/python-metaclasses/
+    https://en.wikipedia.org/wiki/Evaluation_function

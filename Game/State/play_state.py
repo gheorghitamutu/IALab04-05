@@ -22,10 +22,12 @@ class PlayState(StateInterface):
 
         for i in matrix:
             for j in i:
-                if j is True:
+                if j is 1:
                     print("X ", end="")
-                else:
+                elif j is 0:
                     print("O ", end="")
+                else:
+                    print("_ ", end="")
 
                 index += 1
 
@@ -33,7 +35,8 @@ class PlayState(StateInterface):
                     print("")
                     index = 0
 
-        for i in range(size * 2):
+        print("")
+        for i in range(size * 2 - 1):
             print("-", end="")
         print("")
 
