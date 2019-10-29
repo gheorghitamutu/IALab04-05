@@ -1,4 +1,6 @@
 from Game.State.state_machine import StateMachine
+from Game.Player.AI_player import AIPlayer
+from Game.Player.human_player import HumanPlayer
 
 
 class GameData:
@@ -6,18 +8,37 @@ class GameData:
         self.__state_machine = StateMachine()
         self.__matrix_size = 3  # can always make this as an options for a bigger matrix instead hard coding it
         self.__empty_cell = self.__matrix_size + 1
-        self.__matrix_generator = lambda n: [[self.__empty_cell + 1 for i in range(n)] for j in range(n)]
+        self.__matrix_generator = lambda n: [[self.__empty_cell for i in range(n)] for j in range(n)]
         self.__field_matrix = self.__matrix_generator(self.__matrix_size)
-        self.__player_list = []  # this would allow X numbers of players and it will be used in PlayState class
+        self.__player_list = [
+            HumanPlayer(),
+            AIPlayer()
+        ]  # this would allow X numbers of players and it will be used in PlayState class
         self.__evaluate_good = 1
         self.__evaluate_bad = -1
         self.__evaluate_neutral = 0
+        self.__current_player_index = 0
 
     def get_state_machine(self):
         return self.__state_machine
 
     def get_field_matrix(self):
         return self.__field_matrix
+
+    def get_current_player(self):
+        return self.__player_list[self.__current_player_index]
+
+    def move_to_next_player(self):
+        if self.__current_player_index < len(self.__player_list) - 1:
+            self.__current_player_index += 1
+        else:
+            self.__current_player_index = 0
+
+    def make_move(self, move, value):
+        self.__field_matrix[move[0]][move[1]] = value
+
+    def is_cell_empty(self, next_move):
+        return self.__field_matrix[next_move[0]][next_move[1]] == self.__empty_cell
 
     # Returns a value based on who is winning (-1, 0, 1).
     def evaluate_matrix(self):

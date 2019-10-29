@@ -1,19 +1,27 @@
-from time import sleep
 from Game.State.state_interface import StateInterface
 
 
 class PlayState(StateInterface):
     def __init__(self, data):
         self.__data = data
+        self.__next_move = []
+        self.__player_move_value = -1
 
     def init(self):
-        pass  # TODO: maybe init players?
+        pass  # nothing here
 
     def handle_input(self):
-        pass  # TODO: handle input for each player, taking turns
+        player = self.__data.get_current_player()
+        self.__next_move = player.get_input(self.__data)
+        self.__player_move_value = player.get_move_value()
 
     def update(self):
-        pass
+        if len(self.__next_move) == 2:
+            self.__data.make_move(self.__next_move, self.__player_move_value)
+
+        self.__data.move_to_next_player()
+
+        # TODO: change to end state when win/lose/tie
 
     def draw(self):
         matrix = self.__data.get_field_matrix()
@@ -40,11 +48,8 @@ class PlayState(StateInterface):
             print("-", end="")
         print("")
 
-        # TODO: remove the sleep after actions are implemented
-        sleep(1)
-
     def pause(self):
-        pass  # get to pause menu
+        pass  # TODO: get to pause menu
 
     def resume(self):
-        pass  # resume the game
+        pass  # TODO: resume the game
