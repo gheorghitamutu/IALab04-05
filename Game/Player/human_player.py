@@ -8,8 +8,8 @@ class HumanPlayer(PlayerInterface):
 
     def get_input(self, data):
         while True:
-            row = input("Enter # row\n")
-            col = input("Enter # column\n")
+            row = input("Enter # row ")
+            col = input("Enter # column ")
 
             self.current_move = [int(row), int(col)]
 

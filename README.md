@@ -11,3 +11,5 @@
 ## Various concepts or ideas used
     https://uk.godaddy.com/engineering/2018/12/20/python-metaclasses/
     https://en.wikipedia.org/wiki/Evaluation_function
+    http://code.activestate.com/recipes/474088-tail-call-optimization-decorator/
+    https://towardsdatascience.com/tic-tac-toe-creating-unbeatable-ai-with-minimax-algorithm-8af9e52c1e7d

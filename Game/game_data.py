@@ -104,10 +104,11 @@ class GameData:
                 if self.__field_matrix[i][j] == self.__empty_cell:
 
                     # move
-                    self.__field_matrix[i][j] = self.__evaluate_good if is_max else self.__evaluate_bad
+                    self.__field_matrix[i][j] = 1 if is_max else 0  # X or O
 
                     # choose the maximum value
-                    best = max(best, self.minimax(depth + 1, not is_max))
+                    best = max(best, self.minimax(depth + 1, not is_max)) if is_max \
+                        else min(best, self.minimax(depth + 1, not is_max))
 
                     # undo the move
                     self.__field_matrix[i][j] = self.__empty_cell
@@ -128,7 +129,10 @@ class GameData:
                     self.__field_matrix[i][j] = player_matrix_value
 
                     # choose the maximum value for this move
-                    current_move_value = self.minimax(0, False)
+                    current_move_value = self.minimax(0, True)
+
+                    # TODO: remove message when it is not needed anymore
+                    print("AI current move value: {}".format(current_move_value))
 
                     # undo the move
                     self.__field_matrix[i][j] = self.__empty_cell
