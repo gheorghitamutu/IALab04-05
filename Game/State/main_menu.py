@@ -6,6 +6,7 @@ from Game.State.play_state import PlayState
 class MainMenu(StateInterface):
     def __init__(self, data):
         self.__data = data
+        self.__data.generate_clean_matrix()
 
     def init(self):
         pass  # nothing to init here
@@ -24,7 +25,7 @@ class MainMenu(StateInterface):
         pass  # nothing to update here
 
     def draw(self):
-        print("\nMINIMAX GAME")
+        print("\n{}".format(self.__data.get_game_title()))
         print("1. Play")
         print("2. Exit")
 

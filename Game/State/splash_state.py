@@ -6,7 +6,7 @@ from Game.State.main_menu import MainMenu
 class SplashState(StateInterface):
     def __init__(self, data):
         self.__data = data
-        self.__state_duration = 3
+        self.__state_duration = 2
         self.__current_count = 0
 
     def init(self):
@@ -22,7 +22,7 @@ class SplashState(StateInterface):
             self.__current_count += 1
 
     def draw(self):
-        print("Minimax Game {}".format(self.__state_duration - self.__current_count))
+        print("{} {}".format(self.__data.get_game_title(), self.__state_duration - self.__current_count))
 
         time.sleep(1)
 

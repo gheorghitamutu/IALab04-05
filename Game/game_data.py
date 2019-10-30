@@ -1,3 +1,4 @@
+from math import inf
 from Game.State.state_machine import StateMachine
 from Game.Player.AI_player import AIPlayer
 from Game.Player.human_player import HumanPlayer
@@ -6,24 +7,24 @@ from Game.Player.human_player import HumanPlayer
 class GameData:
     def __init__(self):
         self.__state_machine = StateMachine()
-        self.__matrix_size = 3  # can always make this as an options for a bigger matrix instead hard coding it
-        self.__empty_cell = self.__matrix_size + 1
+        self.__matrix_size = 3
+        self.__empty_cell = 0
         self.__matrix_generator = lambda n: [[self.__empty_cell for i in range(n)] for j in range(n)]
-        self.__field_matrix = self.__matrix_generator(self.__matrix_size)
-        self.__player_list = [
-            HumanPlayer(),
-            AIPlayer()
-        ]  # this would allow X numbers of players and it will be used in PlayState class
+        self.__board = self.__matrix_generator(self.__matrix_size)
+        self.__player_list = [HumanPlayer(), AIPlayer()]
         self.__evaluate_good = 1
         self.__evaluate_bad = -1
         self.__evaluate_neutral = 0
         self.__current_player_index = 0
+        self.__game_title = "TIC TAC TOE"
+        self.__human_value = -1
+        self.__AI_value = 1
 
     def get_state_machine(self):
         return self.__state_machine
 
-    def get_field_matrix(self):
-        return self.__field_matrix
+    def get_board(self):
+        return self.__board
 
     def get_current_player(self):
         return self.__player_list[self.__current_player_index]
@@ -34,113 +35,99 @@ class GameData:
         else:
             self.__current_player_index = 0
 
+    def get_game_title(self):
+        return self.__game_title
+
+    def generate_clean_matrix(self):
+        self.__board = self.__matrix_generator(self.__matrix_size)
+
     def make_move(self, move, value):
-        self.__field_matrix[move[0]][move[1]] = value
+        self.__board[move[0]][move[1]] = value
 
     def is_cell_empty(self, next_move):
-        return self.__field_matrix[next_move[0]][next_move[1]] == self.__empty_cell
+        return self.__board[next_move[0]][next_move[1]] == self.__empty_cell
 
-    # Returns a value based on who is winning (-1, 0, 1).
-    def evaluate_matrix(self):
-        # check victory on rows
-        for row in self.__field_matrix:
-            if sum(row) == self.__matrix_size:
-                return self.__evaluate_good  # "X"
-            elif sum(row) == 0:
-                return self.__evaluate_bad  # "O"
+    def win(self, player_value):
 
-        # check victory on columns
-        for col in zip(*self.__field_matrix):
-            if sum(col) == self.__matrix_size:
-                return self.__evaluate_good  # "X"
-            elif sum(col) == 0:
-                return self.__evaluate_bad  # "O"
+        win_states = [
+            [self.__board[0][0], self.__board[0][1], self.__board[0][2]],
+            [self.__board[1][0], self.__board[1][1], self.__board[1][2]],
+            [self.__board[2][0], self.__board[2][1], self.__board[2][2]],
+            [self.__board[0][0], self.__board[1][0], self.__board[2][0]],
+            [self.__board[0][1], self.__board[1][1], self.__board[2][1]],
+            [self.__board[0][2], self.__board[1][2], self.__board[2][2]],
+            [self.__board[0][0], self.__board[1][1], self.__board[2][2]],
+            [self.__board[2][0], self.__board[1][1], self.__board[0][2]],
+        ]
 
-        # check victory on diagonals
-        if sum(self.__field_matrix[i][i] for i in range(self.__matrix_size)) == self.__matrix_size:
-            return self.__evaluate_good  # "X"
-        elif sum(self.__field_matrix[i][i] for i in range(self.__matrix_size)) == 0:
-            return self.__evaluate_bad  # "O"
+        return [player_value, player_value, player_value] in win_states
 
-        if sum(self.__field_matrix[self.__matrix_size - i - 1][self.__matrix_size - i - 1]
-               for i in range(self.__matrix_size)) == self.__matrix_size:
-            return self.__evaluate_good  # "X"
-        elif sum(self.__field_matrix[self.__matrix_size - i - 1][self.__matrix_size - i - 1]
-                 for i in range(self.__matrix_size)) == 0:
-            return self.__evaluate_bad  # "O"
+    def evaluate_state(self):
+        if self.win(self.__AI_value):
+            score = self.__evaluate_good
+        elif self.win(self.__human_value):
+            score = self.__evaluate_bad
+        else:
+            score = self.__evaluate_neutral
 
-        return self.__evaluate_neutral
+        return score
 
-    # Returns if there are any uncompleted cells left in the matrix.
-    def are_empty_cells(self):
-        for row in self.__field_matrix:
-            if self.__empty_cell in row:
-                return True
+    def is_game_over(self):
+        return self.win(self.__AI_value) or self.win(self.__human_value)
 
-        return False
+    def get_empty_cells(self):
+        cells = []
 
-    # Minimax algorithm
-    def minimax(self, depth, is_max):
-        score = self.evaluate_matrix()
+        for x, row in enumerate(self.__board):
+            for y, cell in enumerate(row):
+                if cell == 0:
+                    cells.append([x, y])
 
-        # Maximizer won
-        if score == self.__evaluate_good:
-            return score
+        return cells
 
-        # Minimizer won
-        if score == self.__evaluate_bad:
-            return score
+    def is_valid_move(self, move):
+        if move in self.get_empty_cells():
+            return True
+        else:
+            return False
 
-        # Tie
-        if not self.are_empty_cells():
-            return self.__evaluate_neutral
+    def minimax(self, depth, player_cell_value):
+        if player_cell_value == self.__AI_value:
+            best = [-1, -1, -inf]
+        else:
+            best = [-1, -1, +inf]
 
-        best = 100
-        if is_max:
-            best = -100
+        if depth == 0 or self.is_game_over():
+            score = self.evaluate_state()
+            return [-1, -1, score]
 
-        for i in range(self.__matrix_size):
-            for j in range(self.__matrix_size):
-                if self.__field_matrix[i][j] == self.__empty_cell:
+        for cell in self.get_empty_cells():
+            self.__board[cell[0]][cell[1]] = player_cell_value
 
-                    # move
-                    self.__field_matrix[i][j] = 1 if is_max else 0  # X or O
+            score = self.minimax(depth - 1, -player_cell_value)
 
-                    # choose the maximum value
-                    best = max(best, self.minimax(depth + 1, not is_max)) if is_max \
-                        else min(best, self.minimax(depth + 1, not is_max))
+            self.__board[cell[0]][cell[1]] = self.__empty_cell
+            score[0], score[1] = cell[0], cell[1]
 
-                    # undo the move
-                    self.__field_matrix[i][j] = self.__empty_cell
+            if player_cell_value == self.__AI_value:
+                if score[2] > best[2]:
+                    best = score  # max value
+            else:
+                if score[2] < best[2]:
+                    best = score  # min value
 
         return best
 
-    # Return best move [row, col] where player matrix value is 0 or 1 (O or X)
-    def get_best_move_indexes(self, player_matrix_value):
-        best_value = -100
-        best_row = -1
-        best_col = -1
+    def get_best_move(self):
+        depth = len(self.get_empty_cells())
 
-        for i in range(self.__matrix_size):
-            for j in range(self.__matrix_size):
-                if self.__field_matrix[i][j] == self.__empty_cell:
+        if depth == 0 or self.is_game_over():
+            return None  # game is over already
 
-                    # move
-                    self.__field_matrix[i][j] = player_matrix_value
+        if depth == 9:  # handle the case when the AI is first
+            move = [0, 0]
+        else:
+            row, col, score = self.minimax(depth, self.__AI_value)
+            move = [row, col]
 
-                    # choose the maximum value for this move
-                    current_move_value = self.minimax(0, True)
-
-                    # TODO: remove message when it is not needed anymore
-                    print("AI current move value: {}".format(current_move_value))
-
-                    # undo the move
-                    self.__field_matrix[i][j] = self.__empty_cell
-
-                    # is this the best move up until now?
-                    if current_move_value > best_value:
-                        best_row = i
-                        best_col = j
-                        best_value = current_move_value
-
-        return [best_row, best_col]
+        return move

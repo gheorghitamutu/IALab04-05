@@ -1,4 +1,3 @@
-import sys
 from Game.game_data import GameData
 from Game.State.splash_state import SplashState
 
@@ -8,9 +7,6 @@ class Game:
         self.__data = GameData()
         self.__data.get_state_machine().add_state(SplashState(self.__data), is_replacing=True)
         self.__data.get_state_machine().process_state_changes()
-
-        # TODO: remove set recursion limit call if it's not needed in the end
-        # sys.setrecursionlimit(100000)
 
     def run(self):
         while True:

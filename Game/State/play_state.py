@@ -10,59 +10,44 @@ class PlayState(StateInterface):
         self.__tie = 0
         self.__AI_won = 0
         self.__human_won = 0
+        self.__symbols = {-1: 'X', 1: 'O', 0: ' '}
+        self.__delimiter = '---------------'
 
     def init(self):
         pass  # nothing here
 
     def handle_input(self):
-        player = self.__data.get_current_player()
-        self.__next_move = player.get_input(self.__data)
-        self.__player_move_value = player.get_move_value()
+        if not self.__data.is_game_over():
+            player = self.__data.get_current_player()
+            self.__next_move = player.get_input(self.__data)
+            self.__player_move_value = player.get_move_value()
 
     def update(self):
         if self.__tie or self.__AI_won or self.__human_won:
             self.__data.get_state_machine().add_state(EndState(self.__data), is_replacing=True)
 
-        if len(self.__next_move) == 2:
+        if self.__data.is_valid_move(self.__next_move):
             self.__data.make_move(self.__next_move, self.__player_move_value)
+            self.__data.move_to_next_player()
 
-        end_game = self.__data.evaluate_matrix()
-        if end_game is not 0:
-            if end_game is 1:
-                self.__human_won = 1
-            elif end_game is -1:
-                self.__AI_won = 1
-
-        if self.__data.are_empty_cells() is not True:
-            self.__tie = 1
-
-        self.__data.move_to_next_player()
+        if self.__data.is_game_over():
+            self.__human_won = self.__data.win(-1)  # hardcoded human value
+            self.__AI_won = self.__data.win(1)      # hardcoded AI value
+        elif len(self.__data.get_empty_cells()) is 0:
+            self.__tie = True
 
     def draw(self):
-        matrix = self.__data.get_field_matrix()
-        size = len(matrix)
-        index = 0
+        if self.__player_move_value is 1:  # hardcoded AI value
+            print("AI turn")
+        else:
+            print("Human turn")
 
-        for i in matrix:
-            for j in i:
-                if j is 1:
-                    print("X ", end="")
-                elif j is 0:
-                    print("O ", end="")
-                else:
-                    print("_ ", end="")
-
-                index += 1
-
-                if index == size:
-                    print("")
-                    index = 0
-
-        print("")
-
-        for i in range(size * 2 - 1):
-            print("-", end="")
-        print("")
+        print('{}'.format(self.__delimiter))
+        for row in self.__data.get_board():
+            for cell in row:
+                print('|{}|'.format(self.__symbols[cell]), end="")
+            print("")
+        print('\n{}'.format(self.__delimiter))
 
         if self.__human_won:
             print("Human won!")
