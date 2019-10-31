@@ -25,10 +25,7 @@ class HumanPlayer(PlayerInterface):
             print("Invalid input!")
 
     def get_next_move(self, data):
-        if data.is_cell_empty(self.current_move):
-            return self.current_move
-
-        return []
+        return self.current_move
 
     def get_move_value(self):
         return self.__matrix_value

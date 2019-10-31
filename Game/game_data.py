@@ -44,9 +44,6 @@ class GameData:
     def make_move(self, move, value):
         self.__board[move[0]][move[1]] = value
 
-    def is_cell_empty(self, next_move):
-        return self.__board[next_move[0]][next_move[1]] == self.__empty_cell
-
     def win(self, player_value):
 
         win_states = [
@@ -91,32 +88,47 @@ class GameData:
         else:
             return False
 
-    def minimax(self, depth, player_cell_value):
+    def minimax(self, depth, player_cell_value, alpha, beta):
         if player_cell_value == self.__AI_value:
-            best = [-1, -1, -inf]
+            best_move_score = [-inf, -inf, -inf]
         else:
-            best = [-1, -1, +inf]
+            best_move_score = [-inf, -inf, +inf]
 
-        if depth == 0 or self.is_game_over():
-            score = self.evaluate_state()
-            return [-1, -1, score]
+        if depth is 0 or self.is_game_over():  # first level or final state (win/lose/tie)
+            this_move_score = self.evaluate_state()
+            return [-inf, -inf, this_move_score]
 
         for cell in self.get_empty_cells():
             self.__board[cell[0]][cell[1]] = player_cell_value
 
-            score = self.minimax(depth - 1, -player_cell_value)
+            this_move_score = self.minimax(depth - 1, -player_cell_value, alpha, beta)
 
             self.__board[cell[0]][cell[1]] = self.__empty_cell
-            score[0], score[1] = cell[0], cell[1]
+            this_move_score[0], this_move_score[1] = cell[0], cell[1]
 
-            if player_cell_value == self.__AI_value:
-                if score[2] > best[2]:
-                    best = score  # max value
-            else:
-                if score[2] < best[2]:
-                    best = score  # min value
+            if player_cell_value == self.__AI_value:  # maximizer
+                if this_move_score[2] > best_move_score[2]:
+                    best_move_score = this_move_score
 
-        return best
+                    # alpha-beta pruning maximizer
+                    if best_move_score[2] >= beta:
+                        return best_move_score
+
+                    if best_move_score[2] > alpha:
+                        alpha = best_move_score[2]
+
+            else:  # minimizer
+                if this_move_score[2] < best_move_score[2]:
+                    best_move_score = this_move_score
+
+                    # alpha-beta pruning minimizer
+                    if best_move_score[2] <= alpha:
+                        return best_move_score
+
+                    if best_move_score[2] < beta:
+                        beta = best_move_score[2]
+
+        return best_move_score
 
     def get_best_move(self):
         depth = len(self.get_empty_cells())
@@ -127,7 +139,7 @@ class GameData:
         if depth == 9:  # handle the case when the AI is first
             move = [0, 0]
         else:
-            row, col, score = self.minimax(depth, self.__AI_value)
+            row, col, score = self.minimax(depth, self.__AI_value, -inf, inf)
             move = [row, col]
 
         return move
